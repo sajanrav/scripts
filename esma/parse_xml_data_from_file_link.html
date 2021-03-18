@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module parse_xml_data_from_file_link</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>parse_xml_data_from_file_link</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:g%3A%5Ccodebase%5Cscripts%5Cesma%5Cparse_xml_data_from_file_link.py">g:\codebase\scripts\esma\parse_xml_data_from_file_link.py</a></font></td></tr></table>
+    <p><tt>Script&nbsp;to:&nbsp;<br>
+1.&nbsp;identify&nbsp;first&nbsp;file&nbsp;link&nbsp;from&nbsp;the&nbsp;ESMA&nbsp;publication&nbsp;link<br>
+2.&nbsp;download&nbsp;and&nbsp;extract&nbsp;XML&nbsp;file&nbsp;from&nbsp;zip&nbsp;file&nbsp;in&nbsp;the&nbsp;link&nbsp;<br>
+&nbsp;&nbsp;&nbsp;identified&nbsp;in&nbsp;Step&nbsp;1<br>
+3.&nbsp;parse&nbsp;zip&nbsp;file&nbsp;to&nbsp;extract&nbsp;data&nbsp;for&nbsp;specific&nbsp;attributes<br>
+4.&nbsp;write&nbsp;the&nbsp;data&nbsp;extracted&nbsp;into&nbsp;a&nbsp;csv&nbsp;file&nbsp;<br>
+5.&nbsp;push&nbsp;the&nbsp;csv&nbsp;file&nbsp;to&nbsp;S3<br>
+&nbsp;<br>
+Usage:<br>
+python&nbsp;parse_xml_data_from_file_link.py&nbsp;&lt;output-file&gt;&nbsp;&lt;s3-bucket&gt;<br>
+&nbsp;<br>
+Note:&nbsp;The&nbsp;output&nbsp;file&nbsp;passed&nbsp;as&nbsp;argument&nbsp;will&nbsp;be&nbsp;created&nbsp;in&nbsp;<br>
+current&nbsp;working&nbsp;directory.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="argparse.html">argparse</a><br>
+<a href="boto3.html">boto3</a><br>
+<a href="pandas.html">pandas</a><br>
+</td><td width="25%" valign=top><a href="re.html">re</a><br>
+<a href="requests.html">requests</a><br>
+<a href="sys.html">sys</a><br>
+</td><td width="25%" valign=top><a href="urllib.html">urllib</a><br>
+<a href="xmltodict.html">xmltodict</a><br>
+<a href="zipfile.html">zipfile</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-download_file"><strong>download_file</strong></a>(file_url)</dt><dd><tt>Function&nbsp;to&nbsp;download&nbsp;file&nbsp;from&nbsp;a&nbsp;file&nbsp;url<br>
+&nbsp;<br>
+args:<br>
+file_url(str):&nbsp;Url&nbsp;of&nbsp;file&nbsp;to&nbsp;be&nbsp;downloaded<br>
+&nbsp;<br>
+except:<br>
+Exception&nbsp;to&nbsp;deal&nbsp;with&nbsp;incorrect&nbsp;execution&nbsp;<br>
+of&nbsp;wget&nbsp;command<br>
+&nbsp;<br>
+returns:<br>
+fn(str):&nbsp;Name&nbsp;of&nbsp;file&nbsp;download</tt></dd></dl>
+ <dl><dt><a name="-fetch_data_from_xml_text"><strong>fetch_data_from_xml_text</strong></a>(data)</dt><dd><tt>Function&nbsp;to&nbsp;return&nbsp;final&nbsp;list&nbsp;of&nbsp;text&nbsp;content<br>
+from&nbsp;&lt;FinInstrmGnlAttrbts&gt;&nbsp;and&nbsp;&lt;Issr&gt;&nbsp;tag<br>
+&nbsp;<br>
+args:<br>
+data(str):&nbsp;XML&nbsp;data&nbsp;in&nbsp;text&nbsp;format<br>
+&nbsp;<br>
+except:<br>
+None<br>
+&nbsp;<br>
+returns:<br>
+final(list):&nbsp;List&nbsp;with&nbsp;contents&nbsp;from&nbsp;&lt;FinInstrmGnlAttrbts&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;&lt;Issr&gt;&nbsp;tag</tt></dd></dl>
+ <dl><dt><a name="-get_file_url"><strong>get_file_url</strong></a>()</dt><dd><tt>Function&nbsp;to&nbsp;get&nbsp;file&nbsp;url&nbsp;of&nbsp;first&nbsp;file&nbsp;of&nbsp;type<br>
+DLTINS<br>
+&nbsp;<br>
+args:<br>
+None<br>
+&nbsp;<br>
+except:<br>
+None<br>
+&nbsp;<br>
+returns:<br>
+file_url(str):&nbsp;File&nbsp;url&nbsp;of&nbsp;first&nbsp;file&nbsp;of&nbsp;type&nbsp;DLTINS</tt></dd></dl>
+ <dl><dt><a name="-get_xml_text"><strong>get_xml_text</strong></a>(fn)</dt><dd><tt>Function&nbsp;to&nbsp;get&nbsp;XML&nbsp;text&nbsp;from&nbsp;file<br>
+&nbsp;<br>
+args:<br>
+fn(str):&nbsp;Name&nbsp;of&nbsp;file<br>
+&nbsp;<br>
+except:<br>
+Exception&nbsp;to&nbsp;handle&nbsp;incorrect&nbsp;or&nbsp;errorenous&nbsp;<br>
+read&nbsp;of&nbsp;XML&nbsp;file&nbsp;from&nbsp;zip&nbsp;file<br>
+&nbsp;<br>
+returns:<br>
+data(str):&nbsp;Text&nbsp;in&nbsp;XML&nbsp;format&nbsp;read&nbsp;from<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file</tt></dd></dl>
+ <dl><dt><a name="-parse_finattr_attrib"><strong>parse_finattr_attrib</strong></a>(finattr)</dt><dd><tt>Function&nbsp;to&nbsp;parse&nbsp;out&nbsp;subtags&nbsp;from&nbsp;the&nbsp;tag<br>
+&lt;FinInstrmGnlAttrbts&gt;&nbsp;and&nbsp;create&nbsp;list&nbsp;of&nbsp;texts&nbsp;from<br>
+them.<br>
+&nbsp;<br>
+args:<br>
+finattr(list):&nbsp;Text&nbsp;content&nbsp;present&nbsp;in&nbsp;each&nbsp;&lt;FinInstrmGnlAttrbts&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tag<br>
+&nbsp;<br>
+except:<br>
+None<br>
+&nbsp;<br>
+returns:<br>
+finattr_parsed(list):&nbsp;List&nbsp;of&nbsp;lists&nbsp;where&nbsp;each&nbsp;sublist&nbsp;is&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parsed&nbsp;content&nbsp;of&nbsp;&lt;FinInstrmGnlAttrbts&gt;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tag</tt></dd></dl>
+ <dl><dt><a name="-push_data_to_s3"><strong>push_data_to_s3</strong></a>(local_file_name, bucket, s3_file_name)</dt><dd><tt>Function&nbsp;to&nbsp;push&nbsp;output&nbsp;file&nbsp;to&nbsp;s3&nbsp;bucket.&nbsp;It&nbsp;is&nbsp;assumed&nbsp;<br>
+that&nbsp;the&nbsp;s3&nbsp;bucket&nbsp;already&nbsp;exists&nbsp;and&nbsp;aws&nbsp;config&nbsp;has&nbsp;been&nbsp;<br>
+configured.&nbsp;This&nbsp;function&nbsp;had&nbsp;been&nbsp;taken&nbsp;from&nbsp;the&nbsp;following&nbsp;<br>
+link:&nbsp;<br>
+https://stackoverflow.com/questions/15085864/how-to-upload-a-file-to-directory-in-s3-bucket-using-boto<br>
+&nbsp;<br>
+Note:&nbsp;This&nbsp;function&nbsp;has&nbsp;not&nbsp;been&nbsp;tested.&nbsp;<br>
+&nbsp;<br>
+args:<br>
+local_file_name(str):&nbsp;Local&nbsp;output&nbsp;file&nbsp;name<br>
+bucket(str):&nbsp;S3&nbsp;bucket&nbsp;name<br>
+s3_file_name(str):&nbsp;Output&nbsp;file&nbsp;name&nbsp;in&nbsp;S3<br>
+&nbsp;<br>
+except:<br>
+None<br>
+&nbsp;<br>
+returns:<br>
+None</tt></dd></dl>
+ <dl><dt><a name="-write_to_file"><strong>write_to_file</strong></a>(final, out_file)</dt><dd><tt>Function&nbsp;to&nbsp;write&nbsp;final&nbsp;data&nbsp;to&nbsp;output&nbsp;file<br>
+&nbsp;<br>
+args:<br>
+final(list):&nbsp;List&nbsp;with&nbsp;final&nbsp;data&nbsp;to&nbsp;be&nbsp;written<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;file<br>
+out_file(str):&nbsp;Name&nbsp;of&nbsp;output&nbsp;file<br>
+&nbsp;<br>
+except:<br>
+None<br>
+&nbsp;<br>
+returns:<br>
+None</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>URL</strong> = 'https://registers.esma.europa.eu/solr/esma_regis...T23:59:59Z%5D&amp;wt=xml&amp;indent=true&amp;start=0&amp;rows=100'</td></tr></table>
+</body></html>
