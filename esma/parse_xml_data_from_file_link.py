@@ -301,4 +301,4 @@ if __name__ == "__main__":
         sys.exit(0)
         
     write_to_file(final, out_file)
-    #push_data_to_s3(out_file, bucket, out_file)
+    push_data_to_s3(out_file, bucket, out_file)
