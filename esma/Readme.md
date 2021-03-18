@@ -2,7 +2,9 @@
 - **parse_xml_data_from_file_link.py**\
    Script to fetch file from link and parse to create an output file, 
    henceforth, referred to as parser script\
-   **Usage**: python parse_xml_data_from_file_link.py &ltoutput-file&gt &lts3-bucket&gt
+   **Usage**: python parse_xml_data_from_file_link.py output-file s3-bucket\
+              where output-file: Name of output file\
+			        s3-bucket  : Name of S3 bucket\
 
 - **parse_xml_data_from_file_link.html**\
    PyDoc for the parser script 
