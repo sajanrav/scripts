@@ -10,8 +10,10 @@
     Usage:
     python parse_xml_data_from_file_link.py <output-file> <s3-bucket>
     
-    Note: The output file passed as argument will be created in 
-    current working directory. 
+    Note: 
+    1. The output file passed as argument will be created in 
+       current working directory. 
+    2. push_data_to_s3() has not been tested. 
     
 '''
 
@@ -32,9 +34,7 @@ def push_data_to_s3(local_file_name, bucket, s3_file_name):
     '''
     Function to push output file to s3 bucket. It is assumed 
     that the s3 bucket already exists and aws config has been 
-    configured. This function had been taken from the following 
-    link: 
-    https://stackoverflow.com/questions/15085864/how-to-upload-a-file-to-directory-in-s3-bucket-using-boto
+    configured. 
 
     Note: This function has not been tested. 
 
@@ -47,19 +47,20 @@ def push_data_to_s3(local_file_name, bucket, s3_file_name):
     None
 
     returns:
-    None
+    True/None: Returns True if file write was successful
+               and None if unsuccessful 
 
     '''
 
     print("In function push_data_to_s3")
     try:
-        s3 = boto3.resource(service_name='s3')
-        s3.meta.client.upload_file(
-            Filename=local_file_name, Bucket=bucket, Key=s3_file_name)
+        s3_client = boto3.client('s3')
+        s3_client.upload_file(
+            local_file_name, bucket, s3_file_name)
     except:
-        print("Unable to push output file {} to S3 bucket {}".format(
-            local_file_name, bucket))
-
+        return None
+       
+    return True 
 
 def parse_finattr_attrib(finattr):
     '''
@@ -136,6 +137,7 @@ def get_xml_text(fn):
     returns:
     data(str): Text in XML format read from
                file
+    len_data(int): Length of data returned
 
     '''
     print("In function get_xml_text()")
@@ -145,12 +147,13 @@ def get_xml_text(fn):
         fn_comp = zf.namelist()[0]
         fn_p = zf.open(fn_comp)
         data = fn_p.read().decode('utf-8')
+        len_data = len(data)
     except:
-        return None
+        return None, None
 
-    print("Successfully read zip file : {}".format(fn))
+    print("Successfully read {}: , No. of characters : {}".format(fn, len_data))
     
-    return data
+    return data, len_data
 
 
 def fetch_data_from_xml_text(data):
@@ -167,6 +170,8 @@ def fetch_data_from_xml_text(data):
     returns:
     final(list): List with contents from <FinInstrmGnlAttrbts>
                  and <Issr> tag
+    len_final(int): Length of data list returned
+    
     '''
 
     print("In function fetch_data_from_xml_text")
@@ -177,12 +182,13 @@ def fetch_data_from_xml_text(data):
         finattr_parsed = parse_finattr_attrib(finattr)
         issr = re.findall(r"<Issr>(.*?)</Issr>", data)
         final = [val1 + [val2] for val1, val2 in list(zip(finattr_parsed, issr))]
+        len_final = len(final)
     except:
-        return None
+        return None, None
 
     print("No. of attribute group obtained from XML file : {}".format(len(final)))
     
-    return final
+    return final, len_final
 
 
 def write_to_file(final, out_file):
@@ -198,17 +204,23 @@ def write_to_file(final, out_file):
     None
 
     returns:
-    None
+    True/None: Returns True if file write was successful 
+               and None if unsuccessful.
 
     '''
+    
     print("In function write_to_file()")
-
-    cols = ['FinInstrmGnlAttrbts.Id', 'FinInstrmGnlAttrbts.FullNm', 'FinInstrmGnlAttrbts.ClssfctnTp',
-            'FinInstrmGnlAttrbts.CmmdtyDerivInd', 'FinInstrmGnlAttrbts.NtnlCcy', 'Issr']
-    df = pd.DataFrame(final, columns=cols)
-    df.to_csv(out_file, index=False)
-    print("Output file {} written".format(out_file))
-
+    
+    try:
+        cols = ['FinInstrmGnlAttrbts.Id', 'FinInstrmGnlAttrbts.FullNm', 'FinInstrmGnlAttrbts.ClssfctnTp',
+                'FinInstrmGnlAttrbts.CmmdtyDerivInd', 'FinInstrmGnlAttrbts.NtnlCcy', 'Issr']
+        df = pd.DataFrame(final, columns=cols)
+        df.to_csv(out_file, index=False)
+        print("Output file {} written".format(out_file))
+    except:
+        return None
+        
+    return True
 
 def get_file_url():
     '''
@@ -286,19 +298,26 @@ if __name__ == "__main__":
         sys.exit(0)
 
     fn = download_file(file_url)
-    if not fn:
+    if fn is None:
         print("Unable to download file from url: {}".format(file_url))
         sys.exit(0)
 
-    data = get_xml_text(fn)
-    if not data:
+    data, len_data = get_xml_text(fn)
+    if data is None:
         print("Unable to read XML file from zip file obtained from zip file: {}".format(fn))
         sys.exit(0)
 
-    final = fetch_data_from_xml_text(data)
-    if not final:
+    final, len_final = fetch_data_from_xml_text(data)
+    if final is None:
         print("Error in cleaning data for file {}".format(fn))
         sys.exit(0)
-        
-    write_to_file(final, out_file)
-    push_data_to_s3(out_file, bucket, out_file)
+    
+    write_to_flag = write_to_file(final, out_file)
+    if write_to_flag is None:
+        print("Error in writing to file: {}".format(out_file))
+        sys.exit(0)
+         
+    push_data_flag = push_data_to_s3(out_file, bucket, out_file)
+    if push_data_flag is None:
+        print("Unable to push output file {} to S3 bucket {}".format(
+            local_file_name, bucket)) 

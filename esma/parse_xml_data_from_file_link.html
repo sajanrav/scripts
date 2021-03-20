@@ -20,8 +20,10 @@
 Usage:<br>
 python&nbsp;parse_xml_data_from_file_link.py&nbsp;&lt;output-file&gt;&nbsp;&lt;s3-bucket&gt;<br>
 &nbsp;<br>
-Note:&nbsp;The&nbsp;output&nbsp;file&nbsp;passed&nbsp;as&nbsp;argument&nbsp;will&nbsp;be&nbsp;created&nbsp;in&nbsp;<br>
-current&nbsp;working&nbsp;directory.</tt></p>
+Note:&nbsp;<br>
+1.&nbsp;The&nbsp;output&nbsp;file&nbsp;passed&nbsp;as&nbsp;argument&nbsp;will&nbsp;be&nbsp;created&nbsp;in&nbsp;<br>
+&nbsp;&nbsp;&nbsp;current&nbsp;working&nbsp;directory.&nbsp;<br>
+2.&nbsp;<a href="#-push_data_to_s3">push_data_to_s3</a>()&nbsp;has&nbsp;not&nbsp;been&nbsp;tested.</tt></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
@@ -52,7 +54,7 @@ file_url(str):&nbsp;Url&nbsp;of&nbsp;file&nbsp;to&nbsp;be&nbsp;downloaded<br>
 &nbsp;<br>
 except:<br>
 Exception&nbsp;to&nbsp;deal&nbsp;with&nbsp;incorrect&nbsp;execution&nbsp;<br>
-of&nbsp;wget&nbsp;command<br>
+of&nbsp;urlretrieve&nbsp;command<br>
 &nbsp;<br>
 returns:<br>
 fn(str):&nbsp;Name&nbsp;of&nbsp;file&nbsp;download</tt></dd></dl>
@@ -67,7 +69,8 @@ None<br>
 &nbsp;<br>
 returns:<br>
 final(list):&nbsp;List&nbsp;with&nbsp;contents&nbsp;from&nbsp;&lt;FinInstrmGnlAttrbts&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;&lt;Issr&gt;&nbsp;tag</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;&lt;Issr&gt;&nbsp;tag<br>
+len_final(int):&nbsp;Length&nbsp;of&nbsp;data&nbsp;list&nbsp;returned</tt></dd></dl>
  <dl><dt><a name="-get_file_url"><strong>get_file_url</strong></a>()</dt><dd><tt>Function&nbsp;to&nbsp;get&nbsp;file&nbsp;url&nbsp;of&nbsp;first&nbsp;file&nbsp;of&nbsp;type<br>
 DLTINS<br>
 &nbsp;<br>
@@ -90,7 +93,8 @@ read&nbsp;of&nbsp;XML&nbsp;file&nbsp;from&nbsp;zip&nbsp;file<br>
 &nbsp;<br>
 returns:<br>
 data(str):&nbsp;Text&nbsp;in&nbsp;XML&nbsp;format&nbsp;read&nbsp;from<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file<br>
+len_data(int):&nbsp;Length&nbsp;of&nbsp;data&nbsp;returned</tt></dd></dl>
  <dl><dt><a name="-parse_finattr_attrib"><strong>parse_finattr_attrib</strong></a>(finattr)</dt><dd><tt>Function&nbsp;to&nbsp;parse&nbsp;out&nbsp;subtags&nbsp;from&nbsp;the&nbsp;tag<br>
 &lt;FinInstrmGnlAttrbts&gt;&nbsp;and&nbsp;create&nbsp;list&nbsp;of&nbsp;texts&nbsp;from<br>
 them.<br>
@@ -108,9 +112,7 @@ finattr_parsed(list):&nbsp;List&nbsp;of&nbsp;lists&nbsp;where&nbsp;each&nbsp;sub
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tag</tt></dd></dl>
  <dl><dt><a name="-push_data_to_s3"><strong>push_data_to_s3</strong></a>(local_file_name, bucket, s3_file_name)</dt><dd><tt>Function&nbsp;to&nbsp;push&nbsp;output&nbsp;file&nbsp;to&nbsp;s3&nbsp;bucket.&nbsp;It&nbsp;is&nbsp;assumed&nbsp;<br>
 that&nbsp;the&nbsp;s3&nbsp;bucket&nbsp;already&nbsp;exists&nbsp;and&nbsp;aws&nbsp;config&nbsp;has&nbsp;been&nbsp;<br>
-configured.&nbsp;This&nbsp;function&nbsp;had&nbsp;been&nbsp;taken&nbsp;from&nbsp;the&nbsp;following&nbsp;<br>
-link:&nbsp;<br>
-https://stackoverflow.com/questions/15085864/how-to-upload-a-file-to-directory-in-s3-bucket-using-boto<br>
+configured.&nbsp;<br>
 &nbsp;<br>
 Note:&nbsp;This&nbsp;function&nbsp;has&nbsp;not&nbsp;been&nbsp;tested.&nbsp;<br>
 &nbsp;<br>
@@ -123,7 +125,8 @@ except:<br>
 None<br>
 &nbsp;<br>
 returns:<br>
-None</tt></dd></dl>
+True/None:&nbsp;Returns&nbsp;True&nbsp;if&nbsp;file&nbsp;write&nbsp;was&nbsp;successful<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;None&nbsp;if&nbsp;unsuccessful</tt></dd></dl>
  <dl><dt><a name="-write_to_file"><strong>write_to_file</strong></a>(final, out_file)</dt><dd><tt>Function&nbsp;to&nbsp;write&nbsp;final&nbsp;data&nbsp;to&nbsp;output&nbsp;file<br>
 &nbsp;<br>
 args:<br>
@@ -135,7 +138,8 @@ except:<br>
 None<br>
 &nbsp;<br>
 returns:<br>
-None</tt></dd></dl>
+True/None:&nbsp;Returns&nbsp;True&nbsp;if&nbsp;file&nbsp;write&nbsp;was&nbsp;successful&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;None&nbsp;if&nbsp;unsuccessful.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
